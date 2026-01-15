@@ -28,16 +28,17 @@ PromptGuard: ⚠️ BLOCKED - Detected system prompt override attempt (Risk Scor
 
 ## 📦 Installation
 
+Install from source:
+
 ```bash
-pip install promptguard
+git clone https://github.com/ashbhargav/Prompt-Guard.git
+cd Prompt-Guard
+pip install -e .
 ```
 
-Or install from source:
-
+For development (includes testing and demo dependencies):
 ```bash
-git clone https://github.com/yourusername/promptguard.git
-cd promptguard
-pip install -e .
+pip install -e ".[test,demo]"
 ```
 
 ## 🚀 Quick Start
@@ -56,18 +57,19 @@ print(result)
 # Output:
 # {
 #   "is_suspicious": true,
-#   "risk_score": 8,
-#   "confidence": 0.85,
-#   "detected_patterns": ["system_prompt_override", "instruction_override"],
+#   "risk_score": 5.0,
+#   "confidence": 0.6,
+#   "detected_patterns": ["system_prompt_override"],
 #   "recommendation": "BLOCK",
-#   "explanation": "Detected attempt to override system instructions"
+#   "explanation": "Matched pattern in category: system_prompt_override"
 # }
 
 # Use in your application
 if result["recommendation"] == "BLOCK":
-    return "I can't process that request."
+    print("I can't process that request.")
 else:
-    response = llm.generate(user_input)
+    # response = llm.generate(user_input)
+    pass
 ```
 
 ## 🏗️ Architecture
@@ -116,13 +118,13 @@ LLM (if safe)
 from promptguard import PromptGuard, Config
 
 config = Config(
-    # Detection sensitivity (0.0 - 1.0)
+    # Detection sensitivity (not yet implemented in v0.1)
     sensitivity=0.7,
     
     # Enable/disable detection layers
     enable_pattern_matching=True,
     enable_heuristics=True,
-    enable_context_validation=True,
+    enable_context_validation=False,
     
     # Custom patterns
     custom_patterns=[
@@ -134,8 +136,8 @@ config = Config(
     application_context="customer_service",
     
     # Thresholds
-    block_threshold=7,
-    review_threshold=4
+    block_threshold=7.0,
+    review_threshold=4.0
 )
 
 guard = PromptGuard(config=config)
@@ -183,9 +185,6 @@ pytest
 
 # Run with coverage
 pytest --cov=promptguard
-
-# Run specific test category
-pytest tests/test_detection.py
 ```
 
 ## 📁 Project Structure
@@ -204,7 +203,6 @@ promptguard/
 │       └── main.py           # CLI interface
 ├── tests/
 │   ├── test_detection.py
-│   ├── test_patterns.py
 │   └── test_api.py
 ├── examples/
 │   ├── basic_usage.py
@@ -216,7 +214,7 @@ promptguard/
 
 ## 🔗 Integration Examples
 
-### With LangChain
+### With LangChain (Conceptual)
 
 ```python
 from langchain.llms import OpenAI
@@ -236,23 +234,7 @@ def safe_generate(user_input: str) -> str:
 
 ### With FastAPI
 
-```python
-from fastapi import FastAPI, HTTPException
-from promptguard import PromptGuard
-
-app = FastAPI()
-guard = PromptGuard()
-
-@app.post("/chat")
-async def chat(user_input: str):
-    result = guard.analyze(user_input)
-    
-    if result["recommendation"] == "BLOCK":
-        raise HTTPException(status_code=400, detail="Invalid input detected")
-    
-    # Process with your LLM
-    return {"response": process_with_llm(user_input)}
-```
+See [`examples/fastapi_integration.py`](examples/fastapi_integration.py) for a complete working example.
 
 ## ⚠️ Limitations
 
@@ -293,7 +275,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 Ashish - Security Engineer | AWS Community Builder (Security & Identity)
 Linkedln - https://www.linkedin.com/in/ashish-gampa/
-Email-ashishbhargavgampa9@gmail.com
+Email - ashishbhargavgampa9@gmail.com
 
 ---
 
